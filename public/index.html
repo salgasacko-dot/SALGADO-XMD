@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SALGA-XMD · CENTRAL-HEX</title>
+<meta name="description" content="Connecte SALGA-XMD à ton WhatsApp en quelques secondes — code de jumelage ou QR.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥷</text></svg>">
+<style>
+  :root{
+    --bg: #090c10;
+    --bg-2: #0d1219;
+    --surface: #111823;
+    --surface-2: #161f2c;
+    --line: #223046;
+    --text: #e7edf6;
+    --muted: #8593a8;
+    --mint: #29e0b0;
+    --mint-dim: #1a8f74;
+    --violet: #8a6bff;
+    --amber: #ffb454;
+    --red: #ff6b6b;
+    --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+    --font-body: 'Inter', 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{ scroll-behavior: smooth; }
+
+  html,body{
+    margin:0; padding:0; min-height:100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body{
+    background-image:
+      radial-gradient(circle at 15% 8%, rgba(41,224,176,.08), transparent 40%),
+      radial-gradient(circle at 85% 30%, rgba(138,107,255,.10), transparent 45%);
+  }
+
+  a{ color: inherit; }
+
+  /* ── Motif hexagonal discret en fond ── */
+  .hexfield{
+    position: fixed; inset: 0; z-index: 0;
+    opacity: .3;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='96' viewBox='0 0 84 96'%3E%3Cpath d='M42 0 L84 24 L84 72 L42 96 L0 72 L0 24 Z' fill='none' stroke='%231c2836' stroke-width='1'/%3E%3C/svg%3E");
+    background-size: 84px 96px;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,.1) 60%);
+    pointer-events: none;
+  }
+
+  .shell{
+    position: relative; z-index: 1;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ── Nav ── */
+  .topbar{
+    position: sticky; top: 0; z-index: 20;
+    backdrop-filter: blur(10px);
+    background: rgba(9,12,16,.75);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav{
+    max-width: 1040px; margin: 0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 12px 20px;
+  }
+  .brand-link{
+    display:flex; align-items:center; gap:10px;
+    text-decoration:none;
+  }
+  .brand-link img{
+    width: 34px; height: 34px; border-radius: 9px;
+    object-fit: cover;
+    border: 1px solid var(--line);
+  }
+  .brand-link strong{
+    font-family: var(--font-display);
+    font-size: 14px; letter-spacing: .01em;
+  }
+  .nav-links{
+    display:flex; gap: 22px; align-items:center;
+  }
+  .nav-links a{
+    font-size: 13px; color: var(--muted); text-decoration:none;
+  }
+  .nav-links a:hover{ color: var(--text); }
+  .nav-cta{
+    background: var(--mint); color: #05130e;
+    font-size: 12.5px; font-weight: 700;
+    padding: 8px 14px; border-radius: 9px;
+    text-decoration:none; white-space: nowrap;
+  }
+  @media (max-width: 640px){
+    .nav-links a{ display:none; }
+  }
+
+  /* ── Hero ── */
+  .hero{
+    padding: 56px 0 30px;
+    display:flex; gap: 36px; align-items:center;
+    flex-wrap: wrap;
+  }
+  .hero-copy{ flex: 1 1 320px; min-width: 280px; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:7px;
+    font-size: 12px; color: var(--mint);
+    background: rgba(41,224,176,.08);
+    border: 1px solid var(--mint-dim);
+    padding: 5px 11px; border-radius: 999px;
+    margin-bottom: 18px;
+  }
+  .hero h1{
+    font-family: var(--font-display);
+    font-size: 40px; line-height: 1.12; margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+  .hero h1 span{ color: var(--mint); }
+  .hero p{
+    color: var(--muted); margin: 0 0 24px; font-size: 15.5px; line-height: 1.6;
+    max-width: 42ch;
+  }
+  .hero-ctas{ display:flex; gap: 12px; flex-wrap: wrap; }
+  .btn-primary{
+    background: var(--mint); color: #05130e;
+    border: none; border-radius: 11px;
+    padding: 13px 20px; font-size: 14px; font-weight: 700;
+    text-decoration:none; display:inline-block;
+    cursor:pointer;
+  }
+  .btn-secondary{
+    background: transparent; color: var(--text);
+    border: 1px solid var(--line); border-radius: 11px;
+    padding: 13px 20px; font-size: 14px; font-weight: 600;
+    text-decoration:none; display:inline-block;
+  }
+  .hero-visual{
+    flex: 1 1 260px; min-width: 240px;
+    display:flex; justify-content:center;
+  }
+  .phone-frame{
+    width: 100%; max-width: 280px;
+    border-radius: 26px;
+    padding: 10px;
+    background: linear-gradient(160deg, var(--surface), var(--surface-2));
+    border: 1px solid var(--line);
+    box-shadow: 0 30px 60px -20px rgba(41,224,176,.15);
+  }
+  .phone-frame img{
+    width: 100%; border-radius: 18px; display:block;
+  }
+
+  section{ padding: 46px 0; }
+  .section-label{
+    font-size: 12px; color: var(--mint);
+    margin-bottom: 8px;
+  }
+  h2{
+    font-family: var(--font-display);
+    font-size: 26px; margin: 0 0 8px;
+  }
+  .section-intro{
+    color: var(--muted); font-size: 14.5px; margin: 0 0 30px; max-width: 50ch;
+  }
+
+  /* ── Features ── */
+  .grid-features{
+    display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  }
+  @media (max-width: 720px){
+    .grid-features{ grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px){
+    .grid-features{ grid-template-columns: 1fr; }
+  }
+  .feature{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+  }
+  .feature .icon{ font-size: 20px; margin-bottom: 10px; }
+  .feature h3{
+    font-family: var(--font-display);
+    font-size: 14.5px; margin: 0 0 6px;
+  }
+  .feature p{
+    color: var(--muted); font-size: 12.5px; line-height: 1.5; margin: 0;
+  }
+
+  /* ── Steps ── */
+  .steps-grid{
+    display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  }
+  @media (max-width: 720px){
+    .steps-grid{ grid-template-columns: 1fr; }
+  }
+  .step-card{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+    position: relative;
+  }
+  .step-card .num{
+    font-family: var(--font-mono);
+    color: var(--mint-dim); font-size: 12px;
+    margin-bottom: 8px;
+  }
+  .step-card h3{
+    font-family: var(--font-display);
+    font-size: 14.5px; margin: 0 0 6px;
+  }
+  .step-card p{ color: var(--muted); font-size: 12.5px; margin: 0; line-height: 1.5; }
+
+  /* ── Session card ── */
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 6px;
+    max-width: 460px;
+  }
+
+  .tabs{
+    display:flex; gap:4px;
+    background: var(--bg-2);
+    border-radius: 13px;
+    padding: 4px;
+    margin-bottom: 18px;
+  }
+  .tab{
+    flex:1; text-align:center;
+    padding: 10px 0;
+    border-radius: 10px;
+    font-size: 13.5px; font-weight: 600;
+    color: var(--muted);
+    cursor:pointer;
+    border:none; background: transparent;
+    font-family: var(--font-body);
+    transition: color .2s ease, background .2s ease;
+  }
+  .tab.active{
+    background: var(--surface-2);
+    color: var(--text);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+
+  .panel{ padding: 6px 14px 18px; }
+  .panel[hidden]{ display:none; }
+
+  label.field-label{
+    display:block; font-size: 12.5px; color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .phone-row{
+    display:flex; gap:8px;
+    margin-bottom: 6px;
+  }
+  input[type="tel"]{
+    flex:1;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 11px;
+    padding: 13px 14px;
+    font-size: 15px;
+    font-family: var(--font-mono);
+    outline: none;
+    transition: border-color .15s ease;
+  }
+  input[type="tel"]:focus{ border-color: var(--mint); }
+  input[type="tel"]::placeholder{ color: #4b5870; }
+
+  .hint{ color: var(--muted); font-size: 12px; margin: 0 0 18px; }
+
+  button.action{
+    width: 100%;
+    background: var(--mint);
+    color: #05130e;
+    border: none;
+    border-radius: 11px;
+    padding: 14px 0;
+    font-size: 14.5px; font-weight: 700;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: transform .12s ease, background .15s ease, opacity .15s ease;
+  }
+  button.action:hover{ background: #3fedc0; }
+  button.action:active{ transform: scale(.98); }
+  button.action:disabled{ opacity: .5; cursor: not-allowed; }
+
+  button.ghost{
+    width: 100%;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    padding: 11px 0;
+    font-size: 13px; font-weight: 600;
+    font-family: var(--font-body);
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  button.ghost:hover{ color: var(--text); border-color: #3a4a63; }
+
+  .result{ margin-top: 20px; }
+  .result[hidden]{ display:none; }
+
+  .code-box{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    background: var(--bg-2);
+    border: 1px dashed var(--mint-dim);
+    border-radius: 13px;
+    padding: 20px 10px;
+    margin-bottom: 12px;
+  }
+  .code-box .digits{
+    font-family: var(--font-mono);
+    font-size: 28px; font-weight: 700;
+    letter-spacing: .12em;
+    color: var(--mint);
+    word-break: break-all;
+  }
+
+  .copy-btn{
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 9px;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .copy-btn:hover{ border-color: var(--mint); color: var(--mint); }
+
+  .qr-box{
+    display:flex; align-items:center; justify-content:center;
+    background: #fff;
+    border-radius: 13px;
+    padding: 16px;
+    margin-bottom: 12px;
+    min-height: 220px;
+  }
+  .qr-box img{ width: 100%; max-width: 220px; display:block; }
+
+  .steps-instr{
+    list-style: none; margin: 0 0 4px; padding: 0;
+    counter-reset: step;
+  }
+  .steps-instr li{
+    counter-increment: step;
+    position: relative;
+    padding: 0 0 12px 30px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .steps-instr li::before{
+    content: counter(step);
+    position: absolute; left: 0; top: -1px;
+    width: 20px; height: 20px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 6px;
+    font-size: 11px; font-weight: 700;
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--font-mono);
+  }
+  .steps-instr li b{ color: var(--text); }
+
+  .status-line{
+    display:flex; align-items:center; gap:9px;
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .dot{
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #4b5870;
+    flex: none;
+  }
+  .dot.pulse{ background: var(--amber); animation: pulse 1.1s infinite; }
+  .dot.ok{ background: var(--mint); }
+  .dot.err{ background: var(--red); }
+  @keyframes pulse{
+    0%,100%{ opacity: 1; } 50%{ opacity: .35; }
+  }
+
+  .success{
+    text-align:center; padding: 10px 4px 4px;
+  }
+  .success .tick{
+    width: 54px; height: 54px; margin: 0 auto 14px;
+    border-radius: 50%;
+    background: rgba(41,224,176,.12);
+    border: 1px solid var(--mint-dim);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 24px;
+  }
+  .success h3{
+    font-family: var(--font-display);
+    margin: 0 0 6px; font-size: 18px;
+  }
+  .success p{ color: var(--muted); font-size: 13.5px; margin: 0; }
+
+  /* ── FAQ ── */
+  .faq-item{
+    border-bottom: 1px solid var(--line);
+    padding: 16px 0;
+  }
+  .faq-item:first-child{ border-top: 1px solid var(--line); }
+  .faq-item summary{
+    cursor: pointer; list-style: none;
+    display:flex; align-items:center; justify-content:space-between;
+    font-family: var(--font-display);
+    font-size: 15px;
+  }
+  .faq-item summary::-webkit-details-marker{ display:none; }
+  .faq-item summary::after{
+    content: '+';
+    color: var(--mint); font-size: 18px; margin-left: 12px;
+  }
+  .faq-item[open] summary::after{ content: '–'; }
+  .faq-item p{
+    color: var(--muted); font-size: 13.5px; line-height: 1.6;
+    margin: 10px 0 0;
+  }
+
+  /* ── Channel CTA ── */
+  .channel-card{
+    display:flex; align-items:center; justify-content:space-between;
+    gap: 20px; flex-wrap: wrap;
+    background: linear-gradient(135deg, rgba(41,224,176,.09), rgba(138,107,255,.09));
+    border: 1px solid var(--mint-dim);
+    border-radius: 18px;
+    padding: 26px;
+  }
+  .channel-card h3{
+    font-family: var(--font-display);
+    font-size: 18px; margin: 0 0 6px;
+  }
+  .channel-card p{ color: var(--muted); font-size: 13.5px; margin: 0; max-width: 40ch; }
+  .channel-btn{
+    background: var(--mint); color: #05130e;
+    border-radius: 11px; padding: 12px 20px;
+    font-weight: 700; font-size: 13.5px;
+    text-decoration:none; white-space: nowrap;
+  }
+
+  footer{
+    padding: 30px 0 50px;
+    border-top: 1px solid var(--line);
+    margin-top: 20px;
+  }
+  .footer-inner{
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap: wrap; gap: 10px;
+  }
+  footer p{ color: #4b5870; font-size: 12px; margin: 0; }
+  footer a{ color: var(--muted); text-decoration: none; }
+  footer a:hover{ color: var(--mint); }
+
+  @media (prefers-reduced-motion: reduce){
+    .dot.pulse{ animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hexfield"></div>
+
+<header class="topbar">
+  <nav class="nav">
+    <a href="#top" class="brand-link" aria-label="SALGA-XMD">
+      <img src="https://i.ibb.co/Wvs9SZxF/IMG-20260912-WA0020.jpg" alt="SALGA-XMD">
+      <strong>SALGA-XMD</strong>
+    </a>
+    <div class="nav-links">
+      <a href="#fonctionnalites">Fonctionnalités</a>
+      <a href="#comment">Comment ça marche</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a href="#session" class="nav-cta">Connecter le bot</a>
+  </nav>
+</header>
+
+<main class="shell" id="top">
+
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">🥷 Système CENTRAL-HEX</span>
+      <h1>Connecte <span>SALGA-XMD</span><br>à ton WhatsApp</h1>
+      <p>Un bot WhatsApp sans préfixe, protection de groupe, IA intégrée et capture des vues uniques — connecté en quelques secondes, sans panel à configurer.</p>
+      <div class="hero-ctas">
+        <a href="#session" class="btn-primary">Générer mon code</a>
+        <a href="#fonctionnalites" class="btn-secondary">Voir les fonctionnalités</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="phone-frame">
+        <img src="https://i.ibb.co/Wvs9SZxF/IMG-20260912-WA0020.jpg" alt="Menu SALGA-XMD">
+      </div>
+    </div>
+  </section>
+
+  <section id="fonctionnalites">
+    <div class="section-label">// FONCTIONNALITÉS</div>
+    <h2>Tout ce qu'il te faut</h2>
+    <p class="section-intro">Un bot léger, pensé pour être utilisé sans friction.</p>
+    <div class="grid-features">
+      <article class="feature"><div class="icon">⚡</div><h3>Sans préfixe</h3><p>Tape directement "menu", "ping", "kick"… pas de point ni de symbole à retenir.</p></article>
+      <article class="feature"><div class="icon">🔑</div><h3>Connexion instantanée</h3><p>Code de jumelage ou QR — ton bot est actif en quelques secondes, sans panel.</p></article>
+      <article class="feature"><div class="icon">👁️</div><h3>Anti-vue-unique</h3><p>Capture automatiquement les médias vue unique et te les renvoie en privé.</p></article>
+      <article class="feature"><div class="icon">🛡️</div><h3>Modération de groupe</h3><p>Anti-lien, anti-bot, kick/kickall et gestion complète de tes groupes.</p></article>
+      <article class="feature"><div class="icon">🎨</div><h3>Stickers & IA</h3><p>Créer des stickers, discuter avec l'IA (gpt), télécharger des musiques.</p></article>
+      <article class="feature"><div class="icon">🔒</div><h3>Sécurisé</h3><p>Ta session reste privée et chiffrée — rien n'est partagé avec des tiers.</p></article>
+    </div>
+  </section>
+
+  <section id="comment">
+    <div class="section-label">// COMMENT ÇA MARCHE</div>
+    <h2>3 étapes simples</h2>
+    <p class="section-intro">Connecte ton bot sans quitter cette page.</p>
+    <div class="steps-grid">
+      <article class="step-card"><div class="num">01</div><h3>Entre ton numéro</h3><p>Numéro WhatsApp complet avec l'indicatif pays, sans le signe +.</p></article>
+      <article class="step-card"><div class="num">02</div><h3>Lie ton WhatsApp</h3><p>Colle le code dans WhatsApp → Appareils connectés → Lier un appareil.</p></article>
+      <article class="step-card"><div class="num">03</div><h3>C'est connecté !</h3><p>Ton bot est actif immédiatement — tape "menu" pour commencer.</p></article>
+    </div>
+  </section>
+
+  <section id="session">
+    <div class="section-label">// CONNEXION</div>
+    <h2>Génère ta session</h2>
+    <p class="section-intro">Choisis ta méthode de connexion préférée.</p>
+
+    <div class="card">
+      <div class="tabs">
+        <button class="tab active" id="tabCodeBtn" type="button">Code par numéro</button>
+        <button class="tab" id="tabQrBtn" type="button">QR Code</button>
+      </div>
+
+      <!-- ── Onglet : Code par numéro ── -->
+      <div class="panel" id="panelCode">
+        <label class="field-label" for="phone">Numéro WhatsApp (format international, sans + ni espace)</label>
+        <div class="phone-row">
+          <input type="tel" id="phone" placeholder="Ex : 224621963059" inputmode="numeric" autocomplete="tel">
+        </div>
+        <p class="hint">Indicatif pays + numéro complet, sans le signe « + ».</p>
+        <button class="action" id="btnGetCode" type="button">Générer mon code</button>
+
+        <div class="result" id="codeResult" hidden>
+          <div class="code-box">
+            <span class="digits" id="pairCode">— — — —</span>
+            <button class="copy-btn" id="copyCode" type="button">Copier</button>
+          </div>
+          <ol class="steps-instr">
+            <li>Ouvre <b>WhatsApp</b> sur ton téléphone.</li>
+            <li>Va dans <b>Paramètres → Appareils connectés → Connecter un appareil</b>.</li>
+            <li>Choisis <b>« Se connecter avec le numéro de téléphone »</b>.</li>
+            <li>Colle le code ci-dessus. La connexion se fait automatiquement.</li>
+          </ol>
+          <button class="ghost" id="btnResetCode" type="button">Générer un nouveau code</button>
+        </div>
+
+        <div class="status-line" id="statusCode" hidden>
+          <span class="dot pulse"></span>
+          <span id="statusCodeText">En attente de connexion…</span>
+        </div>
+
+        <div class="success" id="successCode" hidden>
+          <div class="tick">✅</div>
+          <h3>SALGA-XMD est connecté</h3>
+          <p>Tape <b>menu</b> dans WhatsApp pour commencer.</p>
+        </div>
+      </div>
+
+      <!-- ── Onglet : QR Code ── -->
+      <div class="panel" id="panelQr" hidden>
+        <p class="hint" style="margin-bottom:16px">Génère un QR, puis scanne-le depuis WhatsApp.</p>
+        <button class="action" id="btnGetQr" type="button">Générer le QR</button>
+
+        <div class="result" id="qrResult" hidden>
+          <div class="qr-box"><img id="qrImg" alt="QR code de connexion"></div>
+          <ol class="steps-instr">
+            <li>Ouvre <b>WhatsApp</b> sur ton téléphone.</li>
+            <li>Va dans <b>Paramètres → Appareils connectés → Connecter un appareil</b>.</li>
+            <li>Scanne le QR affiché ci-dessus.</li>
+          </ol>
+          <button class="ghost" id="btnRefreshQr" type="button">Actualiser le QR</button>
+        </div>
+
+        <div class="status-line" id="statusQr" hidden>
+          <span class="dot pulse"></span>
+          <span id="statusQrText">En attente du scan…</span>
+        </div>
+
+        <div class="success" id="successQr" hidden>
+          <div class="tick">✅</div>
+          <h3>SALGA-XMD est connecté</h3>
+          <p>Tape <b>menu</b> dans WhatsApp pour commencer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="section-label">// QUESTIONS FRÉQUENTES</div>
+    <h2>Des questions ?</h2>
+    <p class="section-intro">Voici les réponses les plus utiles.</p>
+
+    <details class="faq-item" open>
+      <summary>Pourquoi le bot n'a pas de préfixe ?</summary>
+      <p>SALGA-XMD reconnaît directement les mots-commandes ("menu", "kick", "antilink"...) sans symbole devant. Ça reste pratique tant que tu évites d'utiliser ces mots en début de message normal.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Ma session est-elle privée ?</summary>
+      <p>Oui. Chaque session de pairing est isolée par numéro et n'est visible que par toi. Rien n'est partagé avec CENTRAL-HEX ni avec des tiers.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Le code ne fonctionne pas, que faire ?</summary>
+      <p>Utilise le bouton « Générer un nouveau code » pour repartir sur une session propre, puis réessaie depuis WhatsApp → Appareils connectés.</p>
+    </details>
+    <details class="faq-item">
+      <summary>C'est quoi la fonction antivv ?</summary>
+      <p>Tape "antivv on" pour que le bot capture automatiquement les médias vue unique reçus et te les renvoie en privé. "antivv off" pour désactiver.</p>
+    </details>
+  </section>
+
+  <section id="channel">
+    <div class="channel-card">
+      <div>
+        <h3>Rejoins la communauté CENTRAL-HEX</h3>
+        <p>Actus, mises à jour du bot et entraide entre passionnés de tech.</p>
+      </div>
+      <a class="channel-btn" href="https://whatsapp.com/channel/0029VbC8YkY7oQhiOiiSpy1z" target="_blank" rel="noopener">Rejoindre le canal</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="shell footer-inner">
+    <p>SALGA-XMD · propriétaire SALGA 🥷 · développé par IB-SACKO</p>
+    <p><a href="#session">Connecter mon WhatsApp →</a></p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  const tabCodeBtn = document.getElementById('tabCodeBtn');
+  const tabQrBtn   = document.getElementById('tabQrBtn');
+  const panelCode  = document.getElementById('panelCode');
+  const panelQr    = document.getElementById('panelQr');
+
+  tabCodeBtn.addEventListener('click', () => switchTab('code'));
+  tabQrBtn.addEventListener('click', () => switchTab('qr'));
+
+  function switchTab(which){
+    const isCode = which === 'code';
+    tabCodeBtn.classList.toggle('active', isCode);
+    tabQrBtn.classList.toggle('active', !isCode);
+    panelCode.hidden = !isCode;
+    panelQr.hidden = isCode;
+  }
+
+  // ── Onglet CODE ──
+  const phoneInput   = document.getElementById('phone');
+  const btnGetCode   = document.getElementById('btnGetCode');
+  const codeResult   = document.getElementById('codeResult');
+  const pairCodeEl   = document.getElementById('pairCode');
+  const copyCodeBtn  = document.getElementById('copyCode');
+  const statusCode   = document.getElementById('statusCode');
+  const statusCodeTx = document.getElementById('statusCodeText');
+  const successCode  = document.getElementById('successCode');
+  const btnResetCode = document.getElementById('btnResetCode');
+
+  let codePollTimer = null;
+  let currentNumber = '';
+
+  btnGetCode.addEventListener('click', async () => {
+    const raw = phoneInput.value.replace(/[^0-9]/g, '');
+    if (!raw || raw.length < 8) {
+      phoneInput.style.borderColor = 'var(--red)';
+      phoneInput.focus();
+      return;
+    }
+    phoneInput.style.borderColor = '';
+    currentNumber = raw;
+
+    btnGetCode.disabled = true;
+    btnGetCode.textContent = 'Génération du code…';
+    codeResult.hidden = true;
+    successCode.hidden = true;
+    statusCode.hidden = false;
+    statusCode.querySelector('.dot').className = 'dot pulse';
+    statusCodeTx.textContent = 'Génération du code en cours…';
+
+    try {
+      const res = await fetch('/api/pair', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ number: raw })
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'Erreur inconnue.');
+
+      if (data.connected) {
+        showSuccess('code');
+        return;
+      }
+
+      pairCodeEl.textContent = data.code;
+      codeResult.hidden = false;
+      statusCodeTx.textContent = 'Colle ce code dans WhatsApp — en attente…';
+      pollStatus(data.sessionId, 'code');
+    } catch (e) {
+      statusCode.hidden = false;
+      statusCode.querySelector('.dot').className = 'dot err';
+      statusCodeTx.textContent = e.message || 'Erreur lors de la génération du code.';
+    } finally {
+      btnGetCode.disabled = false;
+      btnGetCode.textContent = 'Générer mon code';
+    }
+  });
+
+  copyCodeBtn.addEventListener('click', async () => {
+    const val = pairCodeEl.textContent.trim();
+    try {
+      await navigator.clipboard.writeText(val);
+      copyCodeBtn.textContent = 'Copié !';
+      setTimeout(() => copyCodeBtn.textContent = 'Copier', 1500);
+    } catch {
+      copyCodeBtn.textContent = 'Échec';
+    }
+  });
+
+  btnResetCode.addEventListener('click', async () => {
+    if (codePollTimer) clearInterval(codePollTimer);
+    try {
+      await fetch('/api/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ number: currentNumber })
+      });
+    } catch {}
+    codeResult.hidden = true;
+    statusCode.hidden = true;
+    successCode.hidden = true;
+  });
+
+  // ── Onglet QR ──
+  const btnGetQr    = document.getElementById('btnGetQr');
+  const qrResult    = document.getElementById('qrResult');
+  const qrImg       = document.getElementById('qrImg');
+  const statusQr    = document.getElementById('statusQr');
+  const statusQrTx  = document.getElementById('statusQrText');
+  const successQr   = document.getElementById('successQr');
+  const btnRefreshQr= document.getElementById('btnRefreshQr');
+
+  let qrPollTimer = null;
+
+  async function launchQr(){
+    btnGetQr.disabled = true;
+    btnGetQr.textContent = 'Génération du QR…';
+    qrResult.hidden = true;
+    successQr.hidden = true;
+    statusQr.hidden = false;
+    statusQr.querySelector('.dot').className = 'dot pulse';
+    statusQrTx.textContent = 'Préparation du QR…';
+
+    try {
+      const res = await fetch('/api/qr', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur inconnue.');
+      pollStatus(data.sessionId, 'qr');
+    } catch (e) {
+      statusQr.querySelector('.dot').className = 'dot err';
+      statusQrTx.textContent = e.message || 'Erreur lors de la génération du QR.';
+    } finally {
+      btnGetQr.disabled = false;
+      btnGetQr.textContent = 'Générer le QR';
+    }
+  }
+
+  btnGetQr.addEventListener('click', launchQr);
+  btnRefreshQr.addEventListener('click', launchQr);
+
+  // ── Polling générique ──
+  function pollStatus(sessionId, mode){
+    if (mode === 'code' && codePollTimer) clearInterval(codePollTimer);
+    if (mode === 'qr' && qrPollTimer) clearInterval(qrPollTimer);
+
+    const tick = async () => {
+      try {
+        const res = await fetch('/api/status/' + sessionId);
+        if (!res.ok) return;
+        const s = await res.json();
+
+        if (mode === 'qr' && s.qr && qrImg.getAttribute('src') !== s.qr) {
+          qrImg.src = s.qr;
+          qrResult.hidden = false;
+        }
+
+        if (s.status === 'connected') {
+          if (mode === 'code' && codePollTimer) clearInterval(codePollTimer);
+          if (mode === 'qr' && qrPollTimer) clearInterval(qrPollTimer);
+          showSuccess(mode);
+        } else if (s.status === 'error' || s.status === 'logged_out') {
+          const dot = (mode === 'code' ? statusCode : statusQr).querySelector('.dot');
+          const txt = mode === 'code' ? statusCodeTx : statusQrTx;
+          dot.className = 'dot err';
+          txt.textContent = 'La session a expiré, réessaie.';
+          if (mode === 'code' && codePollTimer) clearInterval(codePollTimer);
+          if (mode === 'qr' && qrPollTimer) clearInterval(qrPollTimer);
+        }
+      } catch {}
+    };
+
+    tick();
+    const handle = setInterval(tick, 2500);
+    if (mode === 'code') codePollTimer = handle; else qrPollTimer = handle;
+  }
+
+  function showSuccess(mode){
+    if (mode === 'code') {
+      codeResult.hidden = true;
+      statusCode.hidden = true;
+      successCode.hidden = false;
+    } else {
+      qrResult.hidden = true;
+      statusQr.hidden = true;
+      successQr.hidden = false;
+    }
+  }
+})();
+</script>
+
+</body>
+</html>
+
