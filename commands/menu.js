@@ -59,7 +59,7 @@ async function menuCommand(sock, chatId, message) {
 ║ ⬡ ➤ antilink → Bloque les liens
 ║ ⬡ ➤ welcome → Bienvenue
 ║ ⬡ ➤ waouh → Surprise 
-║ ⬡ ➤ antivv → Anti auto
+║ ⬡ ➤ antivv → Anti autov
 ║ ⬡ ➤ sticker / s → Crée un sticker
 ║ ⬡ ➤ toimg → Sticker → image
 ║ ⬡ ➤ gpt → Intelligence artificielle
