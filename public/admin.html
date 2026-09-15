@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#080b16" />
+  <title>SALGA-XMD — Administration</title>
+  <style>
+    :root {
+      --bg: #070a12;
+      --bg-2: #0b1020;
+      --panel: rgba(15, 21, 39, .88);
+      --panel-2: #11182b;
+      --panel-3: #17213a;
+      --border: rgba(148, 163, 184, .16);
+      --text: #f4f7ff;
+      --muted: #91a0bd;
+      --cyan: #28d7ff;
+      --cyan-2: #0ea5e9;
+      --violet: #8b5cf6;
+      --green: #2dd4a3;
+      --yellow: #fbbf24;
+      --red: #fb7185;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .32);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(40, 215, 255, .10), transparent 32%),
+        radial-gradient(circle at 90% 10%, rgba(139, 92, 246, .13), transparent 30%),
+        linear-gradient(135deg, var(--bg), var(--bg-2));
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .hidden { display: none !important; }
+
+    .screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .login-card {
+      width: min(430px, 100%);
+      padding: 34px;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      color: #031018;
+      font-weight: 950;
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      box-shadow: 0 0 28px rgba(40, 215, 255, .25);
+      overflow: hidden;
+    }
+    .brand-mark img { width: 100%; height: 100%; object-fit: cover; }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .brand-subtitle {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+    .login-heading { margin: 32px 0 8px; font-size: 27px; }
+    .muted { color: var(--muted); }
+    .small { font-size: 12px; }
+
+    .field { margin-top: 20px; }
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      color: #c8d3e9;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .input {
+      width: 100%;
+      border: 1px solid var(--border);
+      outline: none;
+      border-radius: 13px;
+      padding: 13px 14px;
+      color: var(--text);
+      background: rgba(4, 8, 18, .7);
+      transition: .2s;
+    }
+
+    .input:focus {
+      border-color: rgba(40, 215, 255, .7);
+      box-shadow: 0 0 0 3px rgba(40, 215, 255, .12);
+    }
+
+    .btn {
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 11px 15px;
+      color: var(--text);
+      background: var(--panel-3);
+      font-weight: 800;
+      transition: transform .18s, border-color .18s, background .18s, opacity .18s;
+    }
+
+    .btn:hover { transform: translateY(-1px); border-color: rgba(148, 163, 184, .28); }
+    .btn:disabled { cursor: not-allowed; opacity: .55; transform: none; }
+    .btn-primary {
+      color: #04121b;
+      background: linear-gradient(135deg, var(--cyan), #67e8f9);
+    }
+    .btn-danger { color: #fff; background: rgba(190, 35, 65, .24); border-color: rgba(251, 113, 133, .25); }
+    .btn-success { color: #05251c; background: var(--green); }
+    .btn-warning { color: #261b04; background: var(--yellow); }
+    .btn-ghost { background: transparent; border-color: var(--border); }
+    .btn-block { width: 100%; margin-top: 24px; }
+
+    .error-box, .notice {
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .error-box {
+      margin-top: 15px;
+      color: #fecdd3;
+      background: rgba(190, 35, 65, .15);
+      border: 1px solid rgba(251, 113, 133, .25);
+    }
+
+    .notice {
+      color: #b8f7e5;
+      background: rgba(45, 212, 163, .10);
+      border: 1px solid rgba(45, 212, 163, .22);
+    }
+
+    .app {
+      width: min(1450px, 100%);
+      min-height: 100vh;
+      margin: auto;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 18px;
+      height: calc(100vh - 36px);
+      display: flex;
+      flex-direction: column;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 23px;
+      background: rgba(10, 15, 29, .88);
+      backdrop-filter: blur(18px);
+    }
+
+    .sidebar .brand { margin-bottom: 28px; }
+    .nav-label {
+      margin: 16px 10px 8px;
+      color: #60708e;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .nav {
+      display: grid;
+      gap: 5px;
+    }
+
+    .nav button {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+      padding: 11px 12px;
+      color: #aab8d1;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .nav button:hover { color: var(--text); background: rgba(255,255,255,.04); }
+    .nav button.active {
+      color: #d9fbff;
+      border-color: rgba(40, 215, 255, .22);
+      background: linear-gradient(90deg, rgba(40, 215, 255, .15), rgba(139, 92, 246, .08));
+    }
+
+    .nav-icon { width: 21px; text-align: center; font-size: 16px; }
+    .sidebar-bottom { margin-top: auto; }
+    .connection-mini {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 13px;
+      background: rgba(255,255,255,.035);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--yellow);
+      box-shadow: 0 0 12px currentColor;
+    }
+    .dot.online { color: var(--green); background: var(--green); }
+    .dot.offline { color: var(--red); background: var(--red); }
+
+    .main { min-width: 0; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 18px;
+      padding: 18px 21px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: rgba(15, 21, 39, .75);
+      backdrop-filter: blur(18px);
+    }
+
+    .topbar h1 { font-size: clamp(20px, 3vw, 28px); }
+    .topbar p { margin-top: 5px; color: var(--muted); font-size: 12px; }
+    .top-actions { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; justify-content: flex-end; }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      color: #b8f7e5;
+      background: rgba(45, 212, 163, .10);
+      border: 1px solid rgba(45, 212, 163, .2);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .content-section { display: none; animation: fadeIn .25s ease; }
+    .content-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 15px;
+      margin: 8px 2px 18px;
+    }
+    .section-heading h2 { font-size: 21px; }
+    .section-heading p { color: var(--muted); font-size: 12px; margin-top: 5px; }
+
+    .grid {
+      display: grid;
+      gap: 15px;
+    }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .card {
+      min-width: 0;
+      padding: 19px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 12px 35px rgba(0,0,0,.10);
+    }
+
+    .stat-card { position: relative; overflow: hidden; }
+    .stat-card::after {
+      content: "";
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      right: -35px;
+      bottom: -45px;
+      border-radius: 50%;
+      background: rgba(40, 215, 255, .08);
+    }
+
+    .stat-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .stat-label { color: var(--muted); font-size: 12px; font-weight: 750; }
+    .stat-icon { font-size: 21px; }
+    .stat-value { margin-top: 13px; font-size: 27px; font-weight: 950; letter-spacing: -.04em; }
+    .stat-meta { margin-top: 7px; color: var(--muted); font-size: 11px; }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .card-head h3 { font-size: 15px; }
+    .card-head p { margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+    .stack { display: grid; gap: 13px; }
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .row-start { align-items: flex-start; }
+    .wrap { flex-wrap: wrap; }
+    .actions { display: flex; flex-wrap: wrap; gap: 9px; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .badge-green { color: #a7f3d0; background: rgba(45, 212, 163, .12); }
+    .badge-yellow { color: #fde68a; background: rgba(251, 191, 36, .12); }
+    .badge-red { color: #fecdd3; background: rgba(251, 113, 133, .12); }
+    .badge-blue { color: #bae6fd; background: rgba(40, 215, 255, .12); }
+    .badge-violet { color: #ddd6fe; background: rgba(139, 92, 246, .14); }
+
+    .metric-line { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 12px; }
+    .metric-line strong { color: var(--text); font-weight: 800; }
+    .progress {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: rgba(255,255,255,.07);
+    }
+    .progress > span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--violet));
+      transition: width .35s ease;
+    }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 560px; }
+    th, td {
+      padding: 13px 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 12px;
+      vertical-align: middle;
+    }
+    th { color: #8090ad; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+    td { color: #d5def0; }
+    tr:last-child td { border-bottom: 0; }
+
+    .empty {
+      padding: 28px 15px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+      border: 1px dashed var(--border);
+      border-radius: 13px;
+    }
+
+    .setting {
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .setting:first-child { padding-top: 0; }
+    .setting:last-child { border-bottom: 0; padding-bottom: 0; }
+    .setting-title { font-weight: 800; font-size: 13px; }
+    .setting-description { margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+    .switch {
+      position: relative;
+      display: inline-flex;
+      width: 48px;
+      height: 27px;
+      flex: 0 0 auto;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      inset: 0;
+      border-radius: 99px;
+      background: #29344e;
+      transition: .2s;
+    }
+    .slider::before {
+      content: "";
+      position: absolute;
+      width: 21px;
+      height: 21px;
+      left: 3px;
+      top: 3px;
+      border-radius: 50%;
+      background: #dbeafe;
+      transition: .2s;
+    }
+    .switch input:checked + .slider { background: linear-gradient(90deg, var(--cyan-2), var(--violet)); }
+    .switch input:checked + .slider::before { transform: translateX(21px); }
+
+    .toast-container {
+      position: fixed;
+      z-index: 100;
+      right: 18px;
+      bottom: 18px;
+      display: grid;
+      gap: 9px;
+      width: min(360px, calc(100vw - 36px));
+    }
+    .toast {
+      padding: 13px 15px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #111a2e;
+      box-shadow: var(--shadow);
+      color: var(--text);
+      font-size: 13px;
+      animation: toastIn .2s ease;
+    }
+    .toast.success { border-color: rgba(45,212,163,.35); }
+    .toast.error { border-color: rgba(251,113,133,.35); }
+    .toast.warning { border-color: rgba(251,191,36,.35); }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0,0,0,.7);
+      backdrop-filter: blur(7px);
+    }
+    .modal {
+      width: min(560px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      padding: 23px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: #0e1629;
+      box-shadow: var(--shadow);
+    }
+
+    .code-box {
+      padding: 14px;
+      overflow: auto;
+      border-radius: 13px;
+      color: #c4f1ff;
+      background: #050912;
+      border: 1px solid var(--border);
+      font: 12px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .mobile-menu { display: none; }
+    .footer-note { margin-top: 16px; color: #64748b; font-size: 11px; text-align: center; }
+
+    @media (max-width: 1100px) {
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .app { grid-template-columns: 215px minmax(0, 1fr); }
+    }
+
+    @media (max-width: 800px) {
+      .app { display: block; padding: 10px; }
+      .sidebar {
+        position: static;
+        height: auto;
+        margin-bottom: 12px;
+        padding: 13px;
+      }
+      .sidebar .brand { margin-bottom: 12px; }
+      .nav {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+      .nav-label, .sidebar-bottom { display: none; }
+      .nav button { width: auto; flex: 0 0 auto; white-space: nowrap; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .top-actions { justify-content: flex-start; }
+      .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .section-heading { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 480px) {
+      .grid-4 { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .card { padding: 15px; border-radius: 17px; }
+      .stat-value { font-size: 22px; }
+      .login-card { padding: 24px; }
+      .topbar { padding: 15px; }
+      .btn { padding: 10px 12px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="loginScreen" class="screen">
+    <form id="loginForm" class="login-card">
+      <div class="brand">
+        <div class="brand-mark"><img src="https://i.ibb.co/Wvs9SZxF/IMG-20260912-WA0020.jpg" alt="SALGA-XMD"></div>
+        <div>
+          <div class="brand-title">SALGA-XMD</div>
+          <div class="brand-subtitle">CENTRAL-HEX • Administration</div>
+        </div>
+      </div>
+
+      <h1 class="login-heading">Connexion admin</h1>
+      <p class="muted">Accède au centre de contrôle de ton bot.</p>
+
+      <div class="field">
+        <label for="adminPassword">Mot de passe administrateur</label>
+        <input id="adminPassword" class="input" type="password" placeholder="••••••••••••" autocomplete="current-password" required />
+      </div>
+
+      <div id="loginError" class="error-box hidden"></div>
+      <button id="loginButton" class="btn btn-primary btn-block" type="submit">Se connecter</button>
+      <p class="footer-note">Interface sécurisée • Session protégée par le backend</p>
+    </form>
+  </div>
+
+  <div id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><img src="https://i.ibb.co/Wvs9SZxF/IMG-20260912-WA0020.jpg" alt="SALGA-XMD"></div>
+        <div>
+          <div class="brand-title">SALGA-XMD</div>
+          <div class="brand-subtitle">ADMIN CENTER</div>
+        </div>
+      </div>
+
+      <div class="nav-label">Principal</div>
+      <nav class="nav" id="mainNav">
+        <button class="active" data-section="dashboard"><span class="nav-icon">⌂</span> Dashboard</button>
+        <button data-section="bot"><span class="nav-icon">◈</span> Gestion du bot</button>
+        <button data-section="users"><span class="nav-icon">♙</span> Utilisateurs</button>
+        <button data-section="groups"><span class="nav-icon">♧</span> Groupes</button>
+        <button data-section="orders"><span class="nav-icon">▣</span> Commandes</button>
+        <button data-section="logs"><span class="nav-icon">≡</span> Journaux</button>
+      </nav>
+
+      <div class="nav-label">Système</div>
+      <nav class="nav">
+        <button data-section="security"><span class="nav-icon">◉</span> Sécurité</button>
+        <button data-section="settings"><span class="nav-icon">⚙</span> Paramètres</button>
+        <button data-section="backups"><span class="nav-icon">↥</span> Sauvegardes</button>
+        <button data-section="docs"><span class="nav-icon">?</span> Documentation</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="connection-mini">
+          <span id="sideDot" class="dot"></span>
+          <span id="sideConnection">Vérification...</span>
+        </div>
+        <button id="logoutButton" class="btn btn-ghost" style="width:100%">Déconnexion</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="pageSubtitle">Vue globale de ton système SALGA-XMD.</p>
+        </div>
+        <div class="top-actions">
+          <span class="status-pill"><span id="topDot" class="dot"></span><span id="topConnection">Connexion...</span></span>
+          <button id="refreshButton" class="btn btn-ghost">↻ Actualiser</button>
+          <button id="restartButton" class="btn btn-warning">Redémarrer</button>
+        </div>
+      </header>
+
+      <section id="dashboard" class="content-section active">
+        <div class="section-heading">
+          <div>
+            <h2>Vue d’ensemble</h2>
+            <p>État actuel du bot, ressources et activité.</p>
+          </div>
+          <span id="lastUpdate" class="muted small">Dernière mise à jour : —</span>
+        </div>
+
+        <div class="grid grid-4">
+          <article class="card stat-card">
+            <div class="stat-top"><span class="stat-label">État du bot</span><span class="stat-icon">⚡</span></div>
+            <div id="statStatus" class="stat-value">—</div>
+            <div id="statStatusMeta" class="stat-meta">Connexion en attente</div>
+          </article>
+          <article class="card stat-card">
+            <div class="stat-top"><span class="stat-label">Uptime</span><span class="stat-icon">◷</span></div>
+            <div id="statUptime" class="stat-value">—</div>
+            <div class="stat-meta">Temps depuis le démarrage</div>
+          </article>
+          <article class="card stat-card">
+            <div class="stat-top"><span class="stat-label">Mémoire</span><span class="stat-icon">▦</span></div>
+            <div id="statMemory" class="stat-value">—</div>
+            <div id="statMemoryMeta" class="stat-meta">Utilisation du processus</div>
+          </article>
+          <article class="card stat-card">
+            <div class="stat-top"><span class="stat-label">Version</span><span class="stat-icon">◇</span></div>
+            <div id="statVersion" class="stat-value">—</div>
+            <div id="statVersionMeta" class="stat-meta">Node.js —</div>
+          </article>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:15px">
+          <article class="card">
+            <div class="card-head">
+              <div><h3>Ressources système</h3><p>Suivi de la mémoire et des performances.</p></div>
+              <span class="badge badge-blue">LIVE</span>
+            </div>
+            <div class="stack">
+              <div class="metric-line"><span>Mémoire utilisée</span><strong id="memoryText">—</strong></div>
+              <div class="progress"><span id="memoryProgress"></span></div>
+              <div class="metric-line"><span>Sessions WhatsApp</span><strong id="sessionCount">—</strong></div>
+              <div class="metric-line"><span>Mode du bot</span><strong id="modeText">—</strong></div>
+              <div class="metric-line"><span>Maintenance</span><strong id="maintenanceText">—</strong></div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <div><h3>Actions rapides</h3><p>Les opérations principales de l’administration.</p></div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary" data-go="bot">Gérer le bot</button>
+              <button class="btn" data-go="users">Voir les utilisateurs</button>
+              <button class="btn" data-go="logs">Consulter les journaux</button>
+              <button class="btn" data-go="settings">Paramètres</button>
+            </div>
+            <div class="notice" style="margin-top:15px">
+              Les informations affichées sont récupérées depuis les routes API du serveur. Si le backend n’est pas connecté, le panneau indique clairement l’état hors ligne.
+            </div>
+          </article>
+        </div>
+
+        <article class="card" style="margin-top:15px">
+          <div class="card-head">
+            <div><h3>Sessions WhatsApp</h3><p>État des connexions actives du bot.</p></div>
+            <button class="btn btn-ghost" data-go="bot">Gérer</button>
+          </div>
+          <div id="dashboardSessions" class="table-wrap"></div>
+        </article>
+      </section>
+
+      <section id="bot" class="content-section">
+        <div class="section-heading"><div><h2>Gestion du bot</h2><p>Contrôle du mode, de la maintenance et des sessions.</p></div></div>
+        <div class="grid grid-2">
+          <article class="card">
+            <div class="card-head"><div><h3>Mode de fonctionnement</h3><p>Définis qui peut utiliser le bot.</p></div><span id="currentModeBadge" class="badge badge-violet">—</span></div>
+            <div class="stack">
+              <label class="row">
+                <span><strong>Mode public</strong><br><span class="muted small">Tous les utilisateurs autorisés peuvent utiliser le bot.</span></span>
+                <input type="radio" name="botMode" value="public" />
+              </label>
+              <label class="row">
+                <span><strong>Mode privé</strong><br><span class="muted small">Accès limité selon les règles du serveur.</span></span>
+                <input type="radio" name="botMode" value="private" />
+              </label>
+              <button id="saveModeButton" class="btn btn-primary">Enregistrer le mode</button>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-head"><div><h3>Maintenance</h3><p>Bloque temporairement les commandes pendant une intervention.</p></div><span id="maintenanceBadge" class="badge badge-green">Désactivée</span></div>
+            <div class="row row-start">
+              <div><strong>Mode maintenance</strong><p class="setting-description">Lorsque la maintenance est active, les utilisateurs doivent recevoir un message d’indisponibilité.</p></div>
+              <label class="switch"><input id="maintenanceToggle" type="checkbox" /><span class="slider"></span></label>
+            </div>
+            <button id="saveMaintenanceButton" class="btn btn-warning" style="margin-top:18px">Appliquer la maintenance</button>
+          </article>
+        </div>
+
+        <article class="card" style="margin-top:15px">
+          <div class="card-head"><div><h3>Sessions connectées</h3><p>Liste des connexions WhatsApp détectées par le backend.</p></div><button id="refreshSessionsButton" class="btn btn-ghost">Actualiser</button></div>
+          <div id="botSessions" class="table-wrap"></div>
+        </article>
+
+        <article class="card" style="margin-top:15px">
+          <div class="card-head"><div><h3>Mise à jour du bot</h3><p>Installe une version depuis une archive ZIP accessible par le serveur.</p></div><span class="badge badge-yellow">Sensible</span></div>
+          <div class="field" style="margin-top:0">
+            <label for="updateUrl">URL de l’archive ZIP</label>
+            <input id="updateUrl" class="input" type="url" placeholder="https://github.com/.../archive/main.zip" />
+          </div>
+          <div class="actions" style="margin-top:15px">
+            <button id="updateButton" class="btn btn-primary">Lancer la mise à jour</button>
+            <button id="updateStatusButton" class="btn btn-ghost">Vérifier le statut</button>
+          </div>
+          <div id="updateStatus" class="muted small" style="margin-top:13px">Aucune mise à jour en cours.</div>
+        </article>
+      </section>
+
+      <section id="users" class="content-section">
+        <div class="section-heading"><div><h2>Utilisateurs</h2><p>Gestion des utilisateurs enregistrés dans ton système.</p></div><button class="btn btn-primary" id="usersRefreshButton">Actualiser</button></div>
+        <article class="card">
+          <div id="usersTable" class="table-wrap"><div class="empty">Les données utilisateurs seront affichées lorsque l’API correspondante sera disponible.</div></div>
+        </article>
+      </section>
+
+      <section id="groups" class="content-section">
+        <div class="section-heading"><div><h2>Groupes</h2><p>Supervision des groupes et communautés liés au bot.</p></div><button class="btn btn-primary" id="groupsRefreshButton">Actualiser</button></div>
+        <article class="card">
+          <div id="groupsTable" class="table-wrap"><div class="empty">Les données groupes seront affichées lorsque l’API correspondante sera disponible.</div></div>
+        </article>
+      </section>
+
+      <section id="orders" class="content-section">
+        <div class="section-heading"><div><h2>Commandes</h2><p>Statistiques et historique des commandes exécutées.</p></div><button class="btn btn-primary" id="ordersRefreshButton">Actualiser</button></div>
+        <article class="card">
+          <div id="ordersTable" class="table-wrap"><div class="empty">Les commandes seront affichées lorsque l’API correspondante sera disponible.</div></div>
+        </article>
+      </section>
+
+      <section id="logs" class="content-section">
+        <div class="section-heading"><div><h2>Journaux système</h2><p>Événements, erreurs et informations du serveur.</p></div><button class="btn btn-primary" id="logsRefreshButton">Actualiser</button></div>
+        <article class="card">
+          <div id="logsOutput" class="code-box">Aucun journal chargé.</div>
+        </article>
+      </section>
+
+      <section id="security" class="content-section">
+        <div class="section-heading"><div><h2>Sécurité</h2><p>État des protections et recommandations de configuration.</p></div></div>
+        <div class="grid grid-2">
+          <article class="card">
+            <div class="card-head"><div><h3>Contrôles de sécurité</h3><p>Indicateurs fournis par l’interface.</p></div></div>
+            <div class="stack">
+              <div class="row"><span>Session admin</span><span class="badge badge-green">Protégée</span></div>
+              <div class="row"><span>Requêtes same-origin</span><span class="badge badge-blue">Activées</span></div>
+              <div class="row"><span>Validation backend</span><span class="badge badge-yellow">Requise</span></div>
+              <div class="row"><span>HTTPS</span><span id="httpsBadge" class="badge badge-yellow">À vérifier</span></div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-head"><div><h3>Recommandations</h3><p>À appliquer côté serveur.</p></div></div>
+            <ul class="muted small" style="line-height:1.9;padding-left:18px;margin:0">
+              <li>Utiliser HTTPS en production.</li>
+              <li>Conserver l’authentification côté backend.</li>
+              <li>Limiter les permissions de la route de mise à jour.</li>
+              <li>Ajouter une protection CSRF si nécessaire selon l’architecture.</li>
+              <li>Ne jamais exposer les secrets dans le frontend.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section id="settings" class="content-section">
+        <div class="section-heading"><div><h2>Paramètres</h2><p>Préférences d’affichage et paramètres généraux du panneau.</p></div></div>
+        <div class="grid grid-2">
+          <article class="card">
+            <div class="card-head"><div><h3>Préférences</h3><p>Ces options sont locales à cette interface.</p></div></div>
+            <div class="setting row">
+              <div><div class="setting-title">Actualisation automatique</div><div class="setting-description">Actualiser l’état du bot périodiquement.</div></div>
+              <label class="switch"><input id="autoRefreshToggle" type="checkbox" checked /><span class="slider"></span></label>
+            </div>
+            <div class="setting row">
+              <div><div class="setting-title">Notifications d’interface</div><div class="setting-description">Afficher les messages de succès et d’erreur.</div></div>
+              <label class="switch"><input id="notificationsToggle" type="checkbox" checked /><span class="slider"></span></label>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-head"><div><h3>Informations du panneau</h3><p>Version et environnement de l’interface.</p></div></div>
+            <div class="stack">
+              <div class="metric-line"><span>Nom</span><strong>SALGA-XMD Admin</strong></div>
+              <div class="metric-line"><span>Version interface</span><strong>2.0.0</strong></div>
+              <div class="metric-line"><span>API de base</span><strong>/api/admin</strong></div>
+              <div class="metric-line"><span>Dernière réponse</span><strong id="settingsLastResponse">—</strong></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="backups" class="content-section">
+        <div class="section-heading"><div><h2>Sauvegardes</h2><p>Zone de préparation pour les sauvegardes du bot et de sa configuration.</p></div></div>
+        <article class="card">
+          <div class="notice">Les boutons de sauvegarde doivent être reliés à des routes backend sécurisées avant utilisation. Cette interface ne crée pas de sauvegarde fictive.</div>
+          <div class="actions" style="margin-top:16px">
+            <button id="backupButton" class="btn btn-primary">Créer une sauvegarde</button>
+            <button id="restoreButton" class="btn btn-ghost">Restaurer une sauvegarde</button>
+          </div>
+          <div id="backupOutput" class="muted small" style="margin-top:14px">Aucune opération exécutée.</div>
+        </article>
+      </section>
+
+      <section id="docs" class="content-section">
+        <div class="section-heading"><div><h2>Documentation API</h2><p>Routes attendues par le panneau d’administration.</p></div></div>
+        <article class="card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Méthode</th><th>Route</th><th>Utilisation</th></tr></thead>
+              <tbody>
+                <tr><td><span class="badge badge-blue">POST</span></td><td>/api/admin/login</td><td>Connexion administrateur</td></tr>
+                <tr><td><span class="badge badge-blue">POST</span></td><td>/api/admin/logout</td><td>Déconnexion</td></tr>
+                <tr><td><span class="badge badge-green">GET</span></td><td>/api/admin/status</td><td>État général du bot</td></tr>
+                <tr><td><span class="badge badge-blue">POST</span></td><td>/api/admin/mode</td><td>Modifier le mode public/privé</td></tr>
+                <tr><td><span class="badge badge-blue">POST</span></td><td>/api/admin/maintenance</td><td>Modifier la maintenance</td></tr>
+                <tr><td><span class="badge badge-blue">POST</span></td><td>/api/admin/restart</td><td>Redémarrer le bot</td></tr>
+                <tr><td><span class="badge badge-blue">POST</span></td><td>/api/admin/update</td><td>Lancer une mise à jour</td></tr>
+                <tr><td><span class="badge badge-green">GET</span></td><td>/api/admin/update/status</td><td>Suivre la mise à jour</td></tr>
+                <tr><td><span class="badge badge-green">GET</span></td><td>/api/admin/users</td><td>Non connectée — réservée à une future mise à jour</td></tr>
+                <tr><td><span class="badge badge-green">GET</span></td><td>/api/admin/groups</td><td>Non connectée — réservée à une future mise à jour</td></tr>
+                <tr><td><span class="badge badge-green">GET</span></td><td>/api/admin/orders</td><td>Non connectée — réservée à une future mise à jour</td></tr>
+                <tr><td><span class="badge badge-green">GET</span></td><td>/api/admin/logs</td><td>Non connectée — réservée à une future mise à jour</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div id="modalBackdrop" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="row" style="margin-bottom:15px">
+        <h3 id="modalTitle">Confirmation</h3>
+        <button id="modalClose" class="btn btn-ghost">Fermer</button>
+      </div>
+      <div id="modalBody" class="muted" style="line-height:1.6"></div>
+      <div class="actions" style="margin-top:20px;justify-content:flex-end">
+        <button id="modalCancel" class="btn btn-ghost">Annuler</button>
+        <button id="modalConfirm" class="btn btn-danger">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const state = {
+        loggedIn: false,
+        status: null,
+        autoRefresh: true,
+        notifications: true,
+        refreshTimer: null,
+        updateTimer: null,
+        pendingConfirm: null
+      };
+
+      const $ = (selector, root = document) => root.querySelector(selector);
+      const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+      const elements = {
+        loginScreen: $("#loginScreen"),
+        loginForm: $("#loginForm"),
+        loginButton: $("#loginButton"),
+        password: $("#adminPassword"),
+        loginError: $("#loginError"),
+        app: $("#app"),
+        mainNav: $("#mainNav"),
+        pageTitle: $("#pageTitle"),
+        pageSubtitle: $("#pageSubtitle"),
+        topDot: $("#topDot"),
+        sideDot: $("#sideDot"),
+        topConnection: $("#topConnection"),
+        sideConnection: $("#sideConnection"),
+        lastUpdate: $("#lastUpdate"),
+        settingsLastResponse: $("#settingsLastResponse"),
+        toastContainer: $("#toastContainer"),
+        modalBackdrop: $("#modalBackdrop"),
+        modalTitle: $("#modalTitle"),
+        modalBody: $("#modalBody"),
+        modalConfirm: $("#modalConfirm")
+      };
+
+      const sectionMeta = {
+        dashboard: ["Dashboard", "Vue globale de ton système SALGA-XMD."],
+        bot: ["Gestion du bot", "Contrôle du mode, de la maintenance et des sessions."],
+        users: ["Utilisateurs", "Gestion des utilisateurs enregistrés dans ton système."],
+        groups: ["Groupes", "Supervision des groupes et communautés liés au bot."],
+        orders: ["Commandes", "Statistiques et historique des commandes exécutées."],
+        logs: ["Journaux", "Événements, erreurs et informations du serveur."],
+        security: ["Sécurité", "État des protections et recommandations de configuration."],
+        settings: ["Paramètres", "Préférences d’affichage et paramètres généraux du panneau."],
+        backups: ["Sauvegardes", "Zone de préparation pour les sauvegardes du bot et de sa configuration."],
+        docs: ["Documentation", "Routes et intégration du panneau d’administration."]
+      };
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function notify(message, type = "success") {
+        if (!state.notifications) return;
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        elements.toastContainer.appendChild(toast);
+        setTimeout(() => toast.remove(), 4200);
+      }
+
+      function showLoginError(message) {
+        elements.loginError.textContent = message;
+        elements.loginError.classList.remove("hidden");
+      }
+
+      function clearLoginError() {
+        elements.loginError.textContent = "";
+        elements.loginError.classList.add("hidden");
+      }
+
+      function setLoading(button, loading, loadingText = "Chargement...") {
+        if (!button) return;
+        if (loading) {
+          button.dataset.originalText = button.textContent;
+          button.textContent = loadingText;
+          button.disabled = true;
+        } else {
+          button.textContent = button.dataset.originalText || button.textContent;
+          button.disabled = false;
+        }
+      }
+
+      async function api(path, options = {}) {
+        const config = {
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+          ...options
+        };
+
+        if (config.body && typeof config.body !== "string") {
+          config.body = JSON.stringify(config.body);
+        }
+
+        const response = await fetch(path, config);
+        const contentType = response.headers.get("content-type") || "";
+        const payload = contentType.includes("application/json")
+          ? await response.json().catch(() => ({}))
+          : await response.text();
+
+        if (!response.ok) {
+          const message = typeof payload === "object"
+            ? payload.message || payload.error
+            : payload;
+          const error = new Error(message || `Erreur HTTP ${response.status}`);
+          error.status = response.status;
+          throw error;
+        }
+
+        elements.settingsLastResponse.textContent = `${response.status} OK`;
+        return payload;
+      }
+
+      function formatUptime(seconds) {
+        const total = Number(seconds);
+        if (!Number.isFinite(total)) return "—";
+        const days = Math.floor(total / 86400);
+        const hours = Math.floor((total % 86400) / 3600);
+        const minutes = Math.floor((total % 3600) / 60);
+        if (days) return `${days}j ${hours}h`;
+        if (hours) return `${hours}h ${minutes}m`;
+        return `${minutes}m`;
+      }
+
+      function formatMemory(memory) {
+        if (memory == null) return "—";
+        if (typeof memory === "object") {
+          const used = memory.used ?? memory.rss ?? memory.heapUsed;
+          const total = memory.total ?? memory.heapTotal;
+          if (used != null && total != null) return `${Math.round(used)} / ${Math.round(total)} Mo`;
+          if (used != null) return `${Math.round(used)} Mo`;
+        }
+        return `${Math.round(Number(memory)) || 0} Mo`;
+      }
+
+      // Adapte la réponse réelle de /api/admin/status (web.js) au format attendu par l'UI.
+      function normalizeStatus(raw) {
+        const data = raw || {};
+        const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+        const online = sessions.some(s => s.status === "connected");
+        return {
+          online,
+          name: data.botName || "SALGA-XMD",
+          uptime: data.uptimeSeconds ?? 0,
+          memory: data.memoryMB,
+          version: data.version || "—",
+          node: data.nodeVersion || "—",
+          mode: data.isPublic === false ? "private" : "public",
+          maintenance: Boolean(data.maintenance),
+          sessions
+        };
+      }
+
+      function setConnection(online) {
+        [elements.topDot, elements.sideDot].forEach(dot => {
+          dot.classList.toggle("online", online);
+          dot.classList.toggle("offline", !online);
+        });
+        elements.topConnection.textContent = online ? "En ligne" : "Hors ligne";
+        elements.sideConnection.textContent = online ? "Serveur connecté" : "Serveur hors ligne";
+      }
+
+      function renderSessions(container, sessions) {
+        if (!sessions.length) {
+          container.innerHTML = '<div class="empty">Aucune session WhatsApp détectée. Connecte un numéro depuis la page d\u2019accueil.</div>';
+          return;
+        }
+
+        const rows = sessions.map((session, index) => {
+          const number = session.number || session.phone || session.id || `Session ${index + 1}`;
+          const status = String(session.status || (session.connected ? "connected" : "unknown")).toLowerCase();
+          const connected = ["connected", "online", "open", "ready"].includes(status);
+          const connecting = ["connecting", "pending", "qr", "waiting_code", "waiting_qr", "requesting_code"].includes(status);
+          const badge = connected
+            ? '<span class="badge badge-green">Connectée</span>'
+            : connecting
+              ? '<span class="badge badge-yellow">Connexion</span>'
+              : '<span class="badge badge-red">Hors ligne</span>';
+
+          return `<tr>
+            <td>${escapeHtml(number)}</td>
+            <td>${badge}</td>
+            <td>${escapeHtml(session.name || session.device || "WhatsApp")}</td>
+            <td>${escapeHtml(session.lastSeen || session.updatedAt || "—")}</td>
+          </tr>`;
+        }).join("");
+
+        container.innerHTML = `<table>
+          <thead><tr><th>Identifiant</th><th>État</th><th>Appareil</th><th>Dernière activité</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+      }
+
+      function renderStatus(raw) {
+        const status = normalizeStatus(raw);
+        state.status = status;
+
+        setConnection(status.online);
+        $("#statStatus").textContent = status.online ? "ONLINE" : "EN ATTENTE";
+        $("#statStatus").style.color = status.online ? "var(--green)" : "var(--yellow)";
+        $("#statStatusMeta").textContent = status.online ? "Bot connecté à WhatsApp" : "Aucune session active";
+        $("#statUptime").textContent = formatUptime(status.uptime);
+        $("#statMemory").textContent = formatMemory(status.memory);
+        $("#statVersion").textContent = status.version;
+        $("#statVersionMeta").textContent = `Node.js ${status.node}`;
+        $("#memoryText").textContent = formatMemory(status.memory);
+        $("#memoryProgress").style.width = "35%";
+
+        $("#sessionCount").textContent = String(status.sessions.length);
+        $("#modeText").textContent = status.mode === "private" ? "Privé" : "Public";
+        $("#maintenanceText").textContent = status.maintenance ? "Active" : "Désactivée";
+        $("#currentModeBadge").textContent = status.mode === "private" ? "Privé" : "Public";
+        $("#maintenanceBadge").textContent = status.maintenance ? "Active" : "Désactivée";
+        $("#maintenanceBadge").className = `badge ${status.maintenance ? "badge-red" : "badge-green"}`;
+        $("#maintenanceToggle").checked = status.maintenance;
+
+        const modeRadio = $(`input[name="botMode"][value="${status.mode}"]`);
+        if (modeRadio) modeRadio.checked = true;
+
+        renderSessions($("#dashboardSessions"), status.sessions);
+        renderSessions($("#botSessions"), status.sessions);
+
+        elements.lastUpdate.textContent = `Dernière mise à jour : ${new Date().toLocaleTimeString("fr-FR")}`;
+      }
+
+      async function refreshStatus(silent = false) {
+        try {
+          const result = await api("/api/admin/status");
+          renderStatus(result);
+          if (!silent) notify("État actualisé.");
+        } catch (error) {
+          setConnection(false);
+          $("#statStatus").textContent = "OFFLINE";
+          $("#statStatus").style.color = "var(--red)";
+          $("#statStatusMeta").textContent = "API indisponible";
+          if (!silent) notify(error.message || "Impossible de récupérer le statut.", "error");
+          if (String(error.status) === "401") await logout();
+        }
+      }
+
+      async function login(password) {
+        setLoading(elements.loginButton, true, "Connexion...");
+        clearLoginError();
+
+        try {
+          await api("/api/admin/login", {
+            method: "POST",
+            body: { password }
+          });
+
+          state.loggedIn = true;
+          elements.loginScreen.classList.add("hidden");
+          elements.app.classList.remove("hidden");
+          notify("Connexion administrateur réussie.");
+          await refreshStatus(true);
+          startAutoRefresh();
+        } catch (error) {
+          showLoginError(error.message || "Mot de passe incorrect ou serveur indisponible.");
+        } finally {
+          setLoading(elements.loginButton, false);
+        }
+      }
+
+      async function logout() {
+        try {
+          await api("/api/admin/logout", { method: "POST" });
+        } catch (_) {}
+        state.loggedIn = false;
+        stopAutoRefresh();
+        elements.app.classList.add("hidden");
+        elements.loginScreen.classList.remove("hidden");
+        elements.password.value = "";
+        notify("Session fermée.");
+      }
+
+      function startAutoRefresh() {
+        stopAutoRefresh();
+        if (!state.autoRefresh) return;
+        state.refreshTimer = setInterval(() => refreshStatus(true), 8000);
+      }
+
+      function stopAutoRefresh() {
+        if (state.refreshTimer) clearInterval(state.refreshTimer);
+        state.refreshTimer = null;
+      }
+
+      function openSection(section) {
+        $$(".content-section").forEach(item => item.classList.toggle("active", item.id === section));
+        $$("#mainNav button").forEach(button => button.classList.toggle("active", button.dataset.section === section));
+        const meta = sectionMeta[section] || sectionMeta.dashboard;
+        elements.pageTitle.textContent = meta[0];
+        elements.pageSubtitle.textContent = meta[1];
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function openConfirm(title, body, callback) {
+        elements.modalTitle.textContent = title;
+        elements.modalBody.textContent = body;
+        state.pendingConfirm = callback;
+        elements.modalBackdrop.classList.remove("hidden");
+      }
+
+      function closeConfirm() {
+        state.pendingConfirm = null;
+        elements.modalBackdrop.classList.add("hidden");
+      }
+
+      async function saveMode() {
+        const mode = $('input[name="botMode"]:checked')?.value;
+        if (!mode) return notify("Choisis un mode.", "warning");
+        const button = $("#saveModeButton");
+        setLoading(button, true, "Enregistrement...");
+        try {
+          await api("/api/admin/mode", { method: "POST", body: { isPublic: mode === "public" } });
+          notify(`Mode ${mode === "private" ? "privé" : "public"} enregistré.`);
+          await refreshStatus(true);
+        } catch (error) {
+          notify(error.message || "Impossible de modifier le mode.", "error");
+        } finally {
+          setLoading(button, false);
+        }
+      }
+
+      async function saveMaintenance() {
+        const enabled = $("#maintenanceToggle").checked;
+        const button = $("#saveMaintenanceButton");
+        setLoading(button, true, "Application...");
+        try {
+          await api("/api/admin/maintenance", { method: "POST", body: { enabled } });
+          notify(enabled ? "Maintenance activée." : "Maintenance désactivée.");
+          await refreshStatus(true);
+        } catch (error) {
+          notify(error.message || "Impossible de modifier la maintenance.", "error");
+        } finally {
+          setLoading(button, false);
+        }
+      }
+
+      async function restartBot() {
+        openConfirm(
+          "Redémarrer SALGA-XMD ?",
+          "Cette opération peut interrompre temporairement les connexions WhatsApp et les commandes en cours.",
+          async () => {
+            try {
+              await api("/api/admin/restart", { method: "POST" });
+              notify("Commande de redémarrage envoyée.");
+              setTimeout(() => refreshStatus(true), 2500);
+            } catch (error) {
+              notify(error.message || "Le redémarrage a échoué.", "error");
+            }
+          }
+        );
+      }
+
+      async function startUpdate() {
+        const url = $("#updateUrl").value.trim();
+        if (!url) return notify("Entre une URL ZIP valide.", "warning");
+
+        openConfirm(
+          "Lancer la mise à jour ?",
+          "Vérifie que l’URL pointe vers une archive fiable. Une mise à jour peut redémarrer le bot.",
+          async () => {
+            const button = $("#updateButton");
+            setLoading(button, true, "Mise à jour...");
+            try {
+              await api("/api/admin/update", { method: "POST", body: { zipUrl: url } });
+              $("#updateStatus").textContent = "Mise à jour lancée. Vérification du statut...";
+              notify("Mise à jour lancée.");
+              pollUpdateStatus();
+            } catch (error) {
+              notify(error.message || "Impossible de lancer la mise à jour.", "error");
+            } finally {
+              setLoading(button, false);
+            }
+          }
+        );
+      }
+
+      async function checkUpdateStatus(showNotification = true) {
+        try {
+          const result = await api("/api/admin/update/status");
+          const data = result || {};
+          const text = data.message || data.step || JSON.stringify(data);
+          $("#updateStatus").textContent = text;
+          if (showNotification) notify("Statut de mise à jour actualisé.");
+          return data;
+        } catch (error) {
+          $("#updateStatus").textContent = error.message || "Statut indisponible.";
+          if (showNotification) notify(error.message || "Impossible de vérifier la mise à jour.", "error");
+        }
+      }
+
+      function pollUpdateStatus() {
+        if (state.updateTimer) clearInterval(state.updateTimer);
+        state.updateTimer = setInterval(async () => {
+          const data = await checkUpdateStatus(false);
+          const value = String(data?.step || "").toLowerCase();
+          if (["restarting", "error"].includes(value)) {
+            clearInterval(state.updateTimer);
+            state.updateTimer = null;
+          }
+        }, 3000);
+      }
+
+      async function loadOptional(endpoint, target, render) {
+        try {
+          const result = await api(endpoint);
+          render(target, result);
+        } catch (error) {
+          target.innerHTML = `<div class="empty">${escapeHtml(error.message || "Route API non disponible.")}</div>`;
+        }
+      }
+
+      function renderGenericTable(target, result, columns) {
+        const rows = Array.isArray(result) ? result : (result?.data || result?.items || []);
+        if (!Array.isArray(rows) || !rows.length) {
+          target.innerHTML = '<div class="empty">Aucune donnée disponible.</div>';
+          return;
+        }
+        target.innerHTML = `<table>
+          <thead><tr>${columns.map(c => `<th>${escapeHtml(c.label)}</th>`).join("")}</tr></thead>
+          <tbody>${rows.map(row => `<tr>${columns.map(c => `<td>${escapeHtml(row?.[c.key] ?? "—")}</td>`).join("")}</tr>`).join("")}</tbody>
+        </table>`;
+      }
+
+      function loadUsers() {
+        loadOptional("/api/admin/users", $("#usersTable"), (target, result) => {
+          renderGenericTable(target, result, [
+            { key: "id", label: "ID" },
+            { key: "name", label: "Nom" },
+            { key: "number", label: "Numéro" },
+            { key: "role", label: "Rôle" },
+            { key: "status", label: "État" }
+          ]);
+        });
+      }
+
+      function loadGroups() {
+        loadOptional("/api/admin/groups", $("#groupsTable"), (target, result) => {
+          renderGenericTable(target, result, [
+            { key: "id", label: "ID" },
+            { key: "name", label: "Nom" },
+            { key: "members", label: "Membres" },
+            { key: "status", label: "État" },
+            { key: "createdAt", label: "Créé le" }
+          ]);
+        });
+      }
+
+      function loadOrders() {
+        loadOptional("/api/admin/orders", $("#ordersTable"), (target, result) => {
+          renderGenericTable(target, result, [
+            { key: "id", label: "ID" },
+            { key: "command", label: "Commande" },
+            { key: "user", label: "Utilisateur" },
+            { key: "status", label: "État" },
+            { key: "createdAt", label: "Date" }
+          ]);
+        });
+      }
+
+      async function loadLogs() {
+        const target = $("#logsOutput");
+        try {
+          const result = await api("/api/admin/logs");
+          const logs = result?.logs || result?.data || result;
+          target.textContent = Array.isArray(logs) ? logs.join("\\n") : typeof logs === "string" ? logs : JSON.stringify(logs, null, 2);
+        } catch (error) {
+          target.textContent = error.message || "Route /api/admin/logs non disponible.";
+        }
+      }
+
+      function setupEvents() {
+        elements.loginForm.addEventListener("submit", event => {
+          event.preventDefault();
+          login(elements.password.value);
+        });
+
+        elements.mainNav.addEventListener("click", event => {
+          const button = event.target.closest("button[data-section]");
+          if (button) openSection(button.dataset.section);
+        });
+
+        $$("[data-go]").forEach(button => button.addEventListener("click", () => openSection(button.dataset.go)));
+        $("#logoutButton").addEventListener("click", logout);
+        $("#refreshButton").addEventListener("click", () => refreshStatus());
+        $("#restartButton").addEventListener("click", restartBot);
+        $("#saveModeButton").addEventListener("click", saveMode);
+        $("#saveMaintenanceButton").addEventListener("click", saveMaintenance);
+        $("#refreshSessionsButton").addEventListener("click", () => refreshStatus());
+        $("#updateButton").addEventListener("click", startUpdate);
+        $("#updateStatusButton").addEventListener("click", () => checkUpdateStatus());
+        $("#usersRefreshButton").addEventListener("click", loadUsers);
+        $("#groupsRefreshButton").addEventListener("click", loadGroups);
+        $("#ordersRefreshButton").addEventListener("click", loadOrders);
+        $("#logsRefreshButton").addEventListener("click", loadLogs);
+
+        $("#autoRefreshToggle").addEventListener("change", event => {
+          state.autoRefresh = event.target.checked;
+          startAutoRefresh();
+          notify(state.autoRefresh ? "Actualisation automatique activée." : "Actualisation automatique désactivée.");
+        });
+
+        $("#notificationsToggle").addEventListener("change", event => {
+          state.notifications = event.target.checked;
+        });
+
+        $("#httpsBadge").textContent = location.protocol === "https:" ? "Activé" : "HTTP";
+        $("#httpsBadge").className = `badge ${location.protocol === "https:" ? "badge-green" : "badge-yellow"}`;
+
+        $("#modalClose").addEventListener("click", closeConfirm);
+        $("#modalCancel").addEventListener("click", closeConfirm);
+        elements.modalBackdrop.addEventListener("click", event => {
+          if (event.target === elements.modalBackdrop) closeConfirm();
+        });
+
+        elements.modalConfirm.addEventListener("click", async () => {
+          const callback = state.pendingConfirm;
+          closeConfirm();
+          if (callback) await callback();
+        });
+
+        $("#backupButton").addEventListener("click", () => {
+          $("#backupOutput").textContent = "Route de sauvegarde à connecter : /api/admin/backup";
+          notify("La sauvegarde doit être reliée au backend.", "warning");
+        });
+
+        $("#restoreButton").addEventListener("click", () => {
+          $("#backupOutput").textContent = "Route de restauration à connecter : /api/admin/restore";
+          notify("La restauration doit être reliée au backend.", "warning");
+        });
+      }
+
+      setupEvents();
+
+      // Au chargement : si le cookie de session admin est encore valide, on saute
+      // directement au dashboard. Sinon, l'écran de connexion reste affiché.
+      (async () => {
+        try {
+          const result = await api("/api/admin/status");
+          state.loggedIn = true;
+          elements.loginScreen.classList.add("hidden");
+          elements.app.classList.remove("hidden");
+          renderStatus(result);
+          startAutoRefresh();
+        } catch (e) {
+          // Pas de session valide : on reste sur l'écran de connexion.
+        }
+      })();
+    })();
+  </script>
+</body>
+</html>
+
