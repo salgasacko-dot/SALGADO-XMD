@@ -73,4 +73,3 @@ async function aiCommand(sock, chatId, message, query) {
 }
 
 module.exports = aiCommand;
-
