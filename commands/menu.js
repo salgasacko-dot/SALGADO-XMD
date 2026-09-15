@@ -47,26 +47,26 @@ async function menuCommand(sock, chatId, message) {
 ║ ⬡ ➤ menu → Affiche ce menu
 ║ ⬡ ➤ ping → Vitesse du bot
 ║ ⬡ ➤ info → Infos sur le bot
-║ ⬡ ➤ owner → Contact du propriétaire
-║ ⬡ ➤ tagall → Mentionner tout le monde
-║ ⬡ ➤ kickall → Expulser tous les membres
+║ ⬡ ➤ owner → Propriétaire
+║ ⬡ ➤ tagall → Mentionner tous
+║ ⬡ ➤ kickall → Expulser tous
 ║ ⬡ ➤ kick → Expulser un membre
-║ ⬡ ➤ song <nom> → Télécharger une musique
-║ ⬡ ➤ pair <numéro> → Connexion par code
-║ ⬡ ➤ mode public/private → Change le mode
+║ ⬡ ➤ song <nom> → Télécharge 
+║ ⬡ ➤ pair <numéro> → Connexion pair
+║ ⬡ ➤ mode public/private 
 ║ ⬡ ➤ open → Ouvrir le groupe
 ║ ⬡ ➤ close → Fermer le groupe
-║ ⬡ ➤ antilink on/off → Bloque les liens
-║ ⬡ ➤ welcome on/off → Message de bienvenue
-║ ⬡ ➤ waouh → Récupère une vue unique
-║ ⬡ ➤ antivv on/off → Anti vue-unique auto
+║ ⬡ ➤ antilink → Bloque les liens
+║ ⬡ ➤ welcome → Bienvenue
+║ ⬡ ➤ waouh → Surprise 
+║ ⬡ ➤ antivv → Anti auto
 ║ ⬡ ➤ sticker / s → Crée un sticker
 ║ ⬡ ➤ toimg → Sticker → image
-║ ⬡ ➤ gpt <question> → Intelligence artificielle
-║ ⬡ ➤ humm → Récupère une vue unique
-║ ⬡ ➤ antibot on/off → Bloque les autres bots
+║ ⬡ ➤ gpt → Intelligence artificielle
+║ ⬡ ➤ humm → Récupère v
+║ ⬡ ➤ antibot → Bloque les  bots
 ║ ⬡ ➤ delete → Supprime des messages
-║ ⬡ ➤ link on/off → Bloque les liens (rapide)
+║ ⬡ ➤ link → Bloque les liens 
 ╚══════════════════════🥷`;
 
     try {
