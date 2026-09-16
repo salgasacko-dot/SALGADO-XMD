@@ -26,7 +26,4 @@ RUN mkdir -p sessions session temp
 ENV NODE_ENV=production
 EXPOSE 3000
 
-CMD ["node", "web.js"]
-
-
-
+CMD ["node", "--max-old-space-size=460", "--optimize-for-size", "web.js"]
