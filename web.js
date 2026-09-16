@@ -1,5 +1,15 @@
 require('dotenv').config();
 
+// 🧠 Réduit l'empreinte mémoire native de sharp (utilisé par sticker/toimg) :
+// désactive son cache interne et limite son pool de threads à 1. Sur un hôte
+// à 512 Mo (Render free), c'est souvent plusieurs dizaines de Mo économisés.
+try {
+    const sharp = require('sharp');
+    sharp.cache(false);
+    sharp.concurrency(1);
+} catch (e) { /* sharp pas encore installé, ignore */ }
+
+
 // 🧹 Filtre les logs bruyants de Baileys/libsignal — bug connu qui affiche
 // l'intégralité d'une session cryptographique (avec clés) à chaque fermeture
 // de session, ce qui remplit la mémoire des logs et provoque des crashes.
@@ -241,6 +251,16 @@ app.get('/', (req, res) => {
 });
 
 // ── Demander un code de pairing pour un numéro ──
+// Limite le nombre de sessions WhatsApp actives en même temps (protège la RAM
+// sur les hébergeurs gratuits type Render 512 Mo). Configurable via .env.
+const MAX_CONCURRENT_SESSIONS = parseInt(process.env.MAX_SESSIONS || '1', 10);
+
+function countActiveSessions(excludeId) {
+    return Object.entries(sessions).filter(([id, s]) =>
+        id !== excludeId && (s.status === 'connected' || s.status === 'waiting_code' || s.status === 'waiting_qr' || s.status === 'requesting_code')
+    ).length;
+}
+
 app.post('/api/pair', async (req, res) => {
     try {
         const { number } = req.body;
@@ -250,6 +270,13 @@ app.post('/api/pair', async (req, res) => {
         }
 
         const sessionId = sanitizeId(cleanNumber);
+
+        if (countActiveSessions(sessionId) >= MAX_CONCURRENT_SESSIONS) {
+            return res.status(429).json({
+                error: `Une autre session est déjà active (limite : ${MAX_CONCURRENT_SESSIONS}). Déconnecte-la d'abord depuis le dashboard admin (/admin) avant d'en connecter une nouvelle — ceci protège la mémoire du serveur.`
+            });
+        }
+
         await startUserSession(cleanNumber, { usePairingCode: true });
 
         let tries = 0;
@@ -271,6 +298,11 @@ app.post('/api/pair', async (req, res) => {
 // ── Démarrer une session en mode QR ──
 app.post('/api/qr', async (req, res) => {
     try {
+        if (countActiveSessions(null) >= MAX_CONCURRENT_SESSIONS) {
+            return res.status(429).json({
+                error: `Une autre session est déjà active (limite : ${MAX_CONCURRENT_SESSIONS}). Déconnecte-la d'abord depuis le dashboard admin (/admin) avant d'en connecter une nouvelle — ceci protège la mémoire du serveur.`
+            });
+        }
         const sessionId = `qr_${Date.now()}`;
         await startUserSession(sessionId, { usePairingCode: false });
         res.json({ sessionId });
@@ -488,5 +520,3 @@ function startSelfPing() {
 }
 
 process.on('uncaughtException', (err) => console.error('Uncaught Exception:', err));
-
-
