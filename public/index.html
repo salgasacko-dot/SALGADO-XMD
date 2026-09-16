@@ -314,6 +314,14 @@
   }
   button.ghost:hover{ color: var(--text); border-color: #3a4a63; }
 
+  button.reset-btn{
+    width:100%; padding: 12px 0; border-radius: 11px; border: 1px solid rgba(255,107,107,.35);
+    background: rgba(255,107,107,.08); color: var(--red); font-weight: 700; font-size: 13.5px;
+    transition: background .18s, border-color .18s;
+  }
+  button.reset-btn:hover{ background: rgba(255,107,107,.16); border-color: var(--red); }
+  button.reset-btn:disabled{ opacity:.6; cursor:not-allowed }
+
   .result{ margin-top: 20px; }
   .result[hidden]{ display:none; }
 
@@ -582,8 +590,9 @@
 
         <div class="success" id="successCode" hidden>
           <div class="tick">✅</div>
-          <h3>SALGA-XMD est connecté</h3>
-          <p>Tape <b>menu</b> dans WhatsApp pour commencer.</p>
+          <h3 id="successCodeTitle">SALGA-XMD est connecté</h3>
+          <p id="successCodeText">Tape <b>menu</b> dans WhatsApp pour commencer.</p>
+          <button class="reset-btn" id="btnDisconnectCode" type="button" hidden style="margin-top:16px">🔌 Déconnecter ce numéro</button>
         </div>
       </div>
 
@@ -687,6 +696,9 @@
   const statusCode   = document.getElementById('statusCode');
   const statusCodeTx = document.getElementById('statusCodeText');
   const successCode  = document.getElementById('successCode');
+  const successCodeTitle = document.getElementById('successCodeTitle');
+  const successCodeText  = document.getElementById('successCodeText');
+  const btnDisconnectCode = document.getElementById('btnDisconnectCode');
   const btnResetCode = document.getElementById('btnResetCode');
 
   let codePollTimer = null;
@@ -721,9 +733,16 @@
       if (!res.ok) throw new Error(data.error || 'Erreur inconnue.');
 
       if (data.connected) {
+        successCodeTitle.textContent = 'Ce numéro est déjà connecté';
+        successCodeText.innerHTML = '<b>' + raw + '</b> est déjà lié à SALGA-XMD.';
+        btnDisconnectCode.hidden = false;
         showSuccess('code');
         return;
       }
+
+      successCodeTitle.textContent = 'SALGA-XMD est connecté';
+      successCodeText.innerHTML = 'Tape <b>menu</b> dans WhatsApp pour commencer.';
+      btnDisconnectCode.hidden = true;
 
       pairCodeEl.textContent = data.code;
       codeResult.hidden = false;
@@ -736,6 +755,34 @@
     } finally {
       btnGetCode.disabled = false;
       btnGetCode.textContent = 'Générer mon code';
+    }
+  });
+
+  btnDisconnectCode.addEventListener('click', async () => {
+    btnDisconnectCode.disabled = true;
+    btnDisconnectCode.textContent = '⏳ Déconnexion…';
+    try {
+      const rr = await fetch('/api/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ number: currentNumber })
+      });
+      const rdata = await rr.json();
+      if (rdata.ok) {
+        successCode.hidden = true;
+        codeResult.hidden = true;
+        statusCode.hidden = true;
+        phoneInput.value = '';
+        currentNumber = '';
+      } else {
+        successCodeText.textContent = '❌ ' + (rdata.error || 'Erreur lors de la déconnexion.');
+      }
+    } catch (e) {
+      successCodeText.textContent = '❌ Erreur de connexion au serveur.';
+    } finally {
+      btnDisconnectCode.disabled = false;
+      btnDisconnectCode.textContent = '🔌 Déconnecter ce numéro';
+      btnDisconnectCode.hidden = true;
     }
   });
 
@@ -853,4 +900,3 @@
 
 </body>
 </html>
-
