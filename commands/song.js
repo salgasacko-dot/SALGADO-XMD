@@ -12,6 +12,11 @@ const AXIOS_DEFAULTS = {
 	}
 };
 
+// 🧠 Plafond mémoire : évite qu'un très gros fichier (vidéo longue, mauvaise
+// détection audio) ne charge des dizaines de Mo d'un coup en RAM.
+const MAX_AUDIO_BYTES = 30 * 1024 * 1024; // 30 Mo
+const MAX_DURATION_SECONDS = 20 * 60; // 20 minutes
+
 async function tryRequest(getter, attempts = 3) {
 	let lastError;
 	for (let attempt = 1; attempt <= attempts; attempt++) {
@@ -88,6 +93,13 @@ async function songCommand(sock, chatId, message) {
 			video = search.videos[0];
         }
 
+        if (video.seconds && video.seconds > MAX_DURATION_SECONDS) {
+            await sock.sendMessage(chatId, {
+                text: `❌ Cette vidéo est trop longue (${video.timestamp}). Limite : 20 minutes, pour préserver la mémoire du serveur.`
+            }, { quoted: message });
+            return;
+        }
+
         // Inform user
         await sock.sendMessage(chatId, {
             image: { url: video.thumbnail },
@@ -122,8 +134,8 @@ async function songCommand(sock, chatId, message) {
 					const audioResponse = await axios.get(audioUrl, {
 						responseType: 'arraybuffer',
 						timeout: 90000,
-						maxContentLength: Infinity,
-						maxBodyLength: Infinity,
+						maxContentLength: MAX_AUDIO_BYTES,
+						maxBodyLength: MAX_AUDIO_BYTES,
 						decompress: true,
 						validateStatus: s => s >= 200 && s < 400,
 						headers: {
@@ -152,8 +164,8 @@ async function songCommand(sock, chatId, message) {
 						const audioResponse = await axios.get(audioUrl, {
 							responseType: 'stream',
 							timeout: 90000,
-							maxContentLength: Infinity,
-							maxBodyLength: Infinity,
+							maxContentLength: MAX_AUDIO_BYTES,
+							maxBodyLength: MAX_AUDIO_BYTES,
 							validateStatus: s => s >= 200 && s < 400,
 							headers: {
 								'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
