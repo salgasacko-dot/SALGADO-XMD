@@ -1,92 +1,164 @@
-# 🥷 SALGA-XMD
+<div align="center">
 
-Bot WhatsApp multi-device **sans préfixe** — tape simplement le nom d'une commande (ex. `menu`, `ping`, `owner`) et le bot répond directement.
+<img src="https://i.ibb.co/3yPMZMFJ/IMG-20260919-WA0035.jpg" width="180" style="border-radius:20px" alt="IB-SACKO"/>
 
-Créé par **IB-SACKO** · Propriétaire **SALGA 🥷** · Système **CENTRAL-HEX**
+# 🥷 IB-SACKO
 
-📢 Rejoindre la communauté : https://whatsapp.com/channel/0029VbC8YkY7oQhiOiiSpy1z
+### Bot WhatsApp sans préfixe — connecté en un lien
 
----
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=24&duration=2800&pause=900&color=16A34A&center=true&vCenter=true&multiline=true&repeat=true&width=560&height=80&lines=Aucun+pr%C3%A9fixe+%E2%80%94+tape+juste+%22menu%22;Connexion+via+QR+ou+Code+Pair;Actif+24%2F24+%E2%80%A2+7%2F7;Syst%C3%A8me+CENTRAL-HEX" alt="typing animation" />
 
-## ⚡ Connexion (aucune installation pour l'utilisateur final)
+<br/>
 
-1. Déploie le bot sur ton propre serveur/hébergeur Node.js (voir plus bas).
-2. Ouvre la page d'accueil (`/`) servie par `web.js`.
-3. Entre ton numéro WhatsApp (avec l'indicatif pays) et clique sur **Obtenir le code**, ou choisis l'onglet **QR Code**.
-4. Sur ton téléphone : WhatsApp → ⋮ → Appareils liés → Lier un appareil → Lier avec un numéro de téléphone → entre le code (ou scanne le QR).
-5. C'est prêt : tape `menu` dans n'importe quelle conversation.
+![Node](https://img.shields.io/badge/Node.js-18%2B-16A34A?style=for-the-badge&logo=node.js&logoColor=white)
+![Baileys](https://img.shields.io/badge/Baileys-WhatsApp%20API-0F3D2E?style=for-the-badge&logo=whatsapp&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Actif%2024%2F7-16A34A?style=for-the-badge)
+![License](https://img.shields.io/badge/License-ISC-0F3D2E?style=for-the-badge)
 
-## 📋 Les 23 commandes
+<br/>
 
-| Commande | Description |
-|---|---|
-| `menu` | Affiche le menu illustré du bot |
-| `ping` | Vitesse de réponse du bot |
-| `info` | Informations sur le bot |
-| `owner` | Contact du créateur et du propriétaire |
-| `tagall` | Mentionne tous les membres du groupe |
-| `kickall` | Expulse tous les membres (admin) |
-| `kick` | Expulse un membre mentionné (admin) |
-| `song <nom>` | Télécharge une musique depuis YouTube |
-| `pair <numéro>` | Génère un code de connexion depuis WhatsApp |
-| `mode public/private` | Change le mode d'accès au bot (propriétaire) |
-| `open` | Ouvre le groupe (tout le monde peut écrire) |
-| `close` | Ferme le groupe (admins seulement) |
-| `antilink on/off` | Supprime automatiquement les liens |
-| `link on/off` | Alternative rapide au blocage de liens |
-| `welcome` | Message de bienvenue pour les nouveaux membres |
-| `waouh` | Récupère un média vue-unique (en réponse) |
-| `humm` | Récupère un média vue-unique (en réponse) |
-| `antivv on/off` | Récupère automatiquement tous les médias vue-unique du chat |
-| `sticker` / `s` | Transforme une image/vidéo en sticker |
-| `toimg` | Transforme un sticker en image |
-| `gpt <question>` | Assistant IA conversationnel |
-| `antibot on/off` | Bloque les messages des autres bots (admin) |
-| `delete` / `del` | Supprime des messages récents (admin) |
+[![Deploy to Render](https://img.shields.io/badge/Déployer_sur-Render-16A34A?style=for-the-badge&logo=render&logoColor=white)](https://render.com/deploy)
+[![Deploy on Railway](https://img.shields.io/badge/Déployer_sur-Railway-0F3D2E?style=for-the-badge&logo=railway&logoColor=white)](https://railway.app/new)
+[![Deploy to Koyeb](https://img.shields.io/badge/Déployer_sur-Koyeb-121212?style=for-the-badge&logo=koyeb&logoColor=white)](https://app.koyeb.com/deploy)
 
-## 🛡️ Dashboard admin
+</div>
 
-Accessible sur `/admin` (mot de passe défini par `ADMIN_PASSWORD` dans `.env`) :
-- État de connexion, mémoire, uptime, version
-- Basculer mode public/privé et mode maintenance
-- Liste des sessions WhatsApp connectées
-- Redémarrage du bot
-- Mise à jour du code depuis un lien ZIP (ex. "Download ZIP" GitHub)
+<br/>
 
-## ⚙️ Installation
+## ✨ À propos
 
-```bash
-git clone <ton-dépôt>
-cd SALGA-XMD
-npm install
-cp .env.example .env   # puis renseigne ADMIN_PASSWORD et GROQ_API_KEY si besoin
-node web.js
+**IB-SACKO** est un bot WhatsApp basé sur ITACHI-XMD-V2, pensé pour être **simple, léger et sans friction** :
+
+- 🚫 **Aucun préfixe** — tu tapes `menu`, `ping`, `owner`... directement.
+- 🔗 **Connexion par lien** — pas de panel, pas d'installation compliquée : une page web, un numéro, un code.
+- 🔑 **QR Code & Code Pair** — au choix, selon ta préférence.
+- 🌍 **Multi-numéros** — plusieurs personnes peuvent connecter leur propre numéro sur la même page.
+- 🟢 **Actif 24/24 · 7/7** — avec système d'auto-ping intégré contre la mise en veille.
+
+<br/>
+
+## 📖 Sommaire
+
+- [Commandes](#-commandes)
+- [Aperçu du menu](#-aperçu-du-menu)
+- [Installation locale](#-installation-locale)
+- [Déploiement 24/7](#-déploiement-247)
+- [Structure du projet](#-structure-du-projet)
+- [Propriétaire & développeur](#-propriétaire--développeur)
+
+<br/>
+
+## 📜 Commandes
+
+| Commande | Rôle | Accès |
+|---|---|---|
+| `menu` | Afficher le menu du bot | Tout le monde |
+| `ping` | Vitesse / statut du bot | Tout le monde |
+| `owner` | Infos sur le propriétaire | Tout le monde |
+| `mode public` / `mode privé` | Basculer l'accès aux commandes | Propriétaire |
+| `pair <numéro>` | Générer un code de connexion dans le chat | Tout le monde |
+| `antidelete on` / `off` | Récupérer les messages supprimés | Propriétaire |
+| `humm` *(en réponse à un média)* | Capturer un média vue unique | Tout le monde |
+| `waouh` *(en réponse à un média)* | Capturer un média vue unique | Tout le monde |
+
+> 💡 Aucun symbole devant les commandes — le bot est **100% sans préfixe**.
+
+<br/>
+
+## 🖼️ Aperçu du menu
+
+<div align="center">
+<img src="https://i.ibb.co/3yPMZMFJ/IMG-20260919-WA0035.jpg" width="260" style="border-radius:14px"/>
+</div>
+
+```
+╔════✦𝗜𝗕-𝗦𝗔𝗖𝗞𝗢✦════✰
+║»✰ ʙᴏᴛ ɴᴀᴍᴇ : IB-SACKO
+║»✰ ᴜsᴇʀɴᴀᴍᴇ : 224621963059
+║»✰ ᴅᴇᴠᴇʟᴏᴘᴇʀ : IB-SACKO
+║»✰ ⏰ ʜᴇᴜʀᴇ : 14:32
+║»✰ 📅 ᴅᴀᴛᴇ : 19/09/2026
+╚══════════════════✰
+               𝐂𝐄𝐍𝐓𝐑𝐀-𝐇𝐄𝐗
+╔══════𝗚𝗘𝗡𝗘𝗥𝗔𝗟══════>
+║❒ menu → afficher le menu
+║❒ ping → vitesse du bot
+║❒ owner → infos propriétaire
+║❒ mode → public/privé
+║❒ pair → code connexion
+║❒ antidelete → suppression des messages
+║❒ humm → capturer un média vue unique
+║❒ waouh → capturer un média vue unique
+╚══════════════════✰
 ```
 
-Le serveur démarre sur le port `3000` (configurable via `PORT`). Ouvre `http://localhost:3000` pour connecter un numéro.
+<br/>
 
-### Déploiement (Docker / Railway / Koyeb)
+## ⚙️ Installation locale
 
-Le projet inclut un `Dockerfile`, un `railway.toml` et un `koyeb.yaml` prêts à l'emploi si tu préfères déployer sur une plateforme plutôt qu'en local — mais ce n'est pas obligatoire : le bot fonctionne aussi bien sur un simple VPS ou en local avec `node web.js`.
+```bash
+git clone <ton-repo>
+cd IB-SACKO
+npm install
+cp .env.example .env
+npm start
+```
 
-## 🔧 Configuration (`.env`)
+Ouvre **http://localhost:3000** → entre ton numéro → récupère ton code ou ton QR → colle-le dans WhatsApp (**Appareils liés → Lier un appareil**) → le bot se connecte automatiquement.
 
-| Variable | Rôle |
-|---|---|
-| `OWNER_NUMBER` / `OWNER_NAME` | Numéro et nom du propriétaire |
-| `CREATOR_NUMBER` / `CREATOR_NAME` | Numéro et nom du créateur |
-| `ADMIN_PASSWORD` | Mot de passe du dashboard `/admin` |
-| `GROQ_API_KEY` | Clé API pour la commande `gpt` (gratuite sur console.groq.com) |
-| `COMMAND_MODE` | `public` ou `private` par défaut |
+<br/>
 
-## 👤 Créateur & Communauté
+## 🚀 Déploiement 24/7
 
-- 🛠️ Créateur : **IB-SACKO** — +224 621 963 059
-- 👑 Propriétaire : **SALGA 🥷** — +224 662 675 862
-- 💎 Système : **CENTRAL-HEX**
-- 📢 Chaîne WhatsApp : https://whatsapp.com/channel/0029VbC8YkY7oQhiOiiSpy1z
+Ce projet est **prêt à déployer** (Dockerfile + configs incluses) sur :
 
----
+| Hébergeur | Config incluse | Notes |
+|---|---|---|
+| **Render** | `Dockerfile` | Gratuit avec mise en veille — ajoute `APP_URL` pour l'auto-ping |
+| **Railway** | `railway.toml` | Gratuit avec crédits mensuels |
+| **Koyeb** | `koyeb.yaml` | Gratuit, pas de mise en veille |
+| **Fly.io** | `Dockerfile` | Carte requise, plan gratuit généreux |
+| **Oracle Cloud (Always Free)** | — | VPS gratuit à vie, config manuelle (`pm2`) |
 
-<div align="center">Propulsé par 🥷 <b>CENTRAL-HEX</b></div>
- 
+⚠️ N'oublie pas d'ajouter la variable `APP_URL` (l'URL publique de ton service) dans les variables d'environnement de ton hébergeur — elle active l'auto-ping anti-veille intégré dans `web.js`.
+
+<br/>
+
+## 🗂️ Structure du projet
+
+```
+IB-SACKO/
+├── commands/        → menu, ping, owner, pair, antidelete, humm, waouh
+├── lib/             → utilitaires (isOwner, isSudo, store...)
+├── data/            → configuration (mode, antidelete)
+├── public/          → page web de connexion (QR + Code Pair)
+├── main.js          → cerveau du bot (sans préfixe)
+├── web.js           → serveur web + gestion des sessions WhatsApp
+├── settings.js      → branding & configuration
+└── Dockerfile       → prêt pour Render / Railway / Koyeb / Fly.io
+```
+
+<br/>
+
+## 👑 Propriétaire & développeur
+
+<div align="center">
+
+**LE BOT A ÉTÉ CRÉÉ PAR**
+🥷 IB-SACKO — `224621963059`
+
+**PROPRIÉTAIRE**
+SALGA 🥷 — `224669403581` · `224662675862`
+
+**DANS LE SYSTÈME**
+🚀 CENTRAL-HEX
+
+[![Rejoindre la chaîne](https://img.shields.io/badge/Rejoindre_la_chaîne-CENTRAL--HEX-16A34A?style=for-the-badge&logo=whatsapp&logoColor=white)](https://whatsapp.com/channel/0029VbDCmVWISTkNEy1D3p3H)
+
+</div>
+
+<br/>
+
+<div align="center">
+<sub>🥷 propulsé par <b>IB-SACKO</b> · système <b>CENTRAL-HEX</b></sub>
+</div>
